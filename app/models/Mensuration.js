@@ -11,7 +11,7 @@ const Mensuration = mongoose.model('Mensuration', {
             accelX : Number,
             accelY : Number,
             accelZ : Number,
-            time : Number         
+            time : String         
         }
     ]
 })
