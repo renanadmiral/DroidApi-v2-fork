@@ -47,10 +47,10 @@ router.delete('/mensuration/:id',async function(request, response, next){
 
     const objeto = await Mensuration.findByIdAndDelete(id)
     if(objeto){
-     response.send({mensagem:`A medição de id : ${id} foi apagada com sucesso`})
+     response.send({mensagem:`A medição de id :"${id}"foi apagada com sucesso`})
     }
     else{
-     response.status(404).send({mensagem:`O id: ${id} não existe`})
+     response.status(404).send({mensagem:`O id: "${id}" não existe`})
     } 
    }catch(error){
     response.status(404).send({mensagem: error.message})

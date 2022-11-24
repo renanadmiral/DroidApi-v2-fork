@@ -10,6 +10,7 @@ const indexRouter = require('./routes.js');
 const app = express();
 
 app.use(logger('dev'));
+app.use(express.bodyParser({limit: '1mb'}))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
