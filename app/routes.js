@@ -57,4 +57,21 @@ router.delete('/mensuration/:id',async function(request, response, next){
    }
 })
 
+router.delete('/list/mensuration',async function(request, response, next){
+  try{
+    const mongoResponse =  await Mensuration.deleteMany(
+      {
+      _id: {
+        $in: request.body
+      }
+    })   
+    
+    if(mongoResponse.deletedCount === 0)response.status(404).send({message:`Nenhuma medição foi encontrada`})
+    else if(mongoResponse.deletedCount >0 && mongoResponse.deletedCount < request.body.length)response.status(200).send({message:`As medições foram parcialmente deletadas.`})
+    else if(mongoResponse.deletedCount === request.body.length)response.status(200).send({message:`Todas as medições foram apagadas com sucesso`})
+  }catch(error){
+    response.status(400).send({message:error.message})
+  } 
+});
+
 module.exports = router;
