@@ -57,7 +57,7 @@ router.delete('/mensuration/:id',async function(request, response, next){
    }
 })
 
-router.delete('/list/mensuration',async function(request, response, next){
+router.put('/list/mensuration',async function(request, response, next){
   try{
     const mongoResponse =  await Mensuration.deleteMany(
       {
