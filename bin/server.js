@@ -10,7 +10,7 @@
  var debug = require('debug')('droidapi:server');
  var http = require('http');
  const {connectDB} = require('../app/mongodb')
- 
+ const setupWebSocket = require('../app/socket.js');
  /**
   * Get port from environment and store in Express.
   */
@@ -37,6 +37,7 @@ connectDB(() => {
  /**
   * Normalize a port into a number, string, or false.
   */
+ setupWebSocket(server);
  
  function normalizePort(val) {
    var port = parseInt(val, 10);

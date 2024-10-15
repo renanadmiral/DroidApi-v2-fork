@@ -17,9 +17,10 @@
     "debug": "^4.3.4",
     "express": "^4.18.2",
     "mongoose": "^6.7.2",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "ws": "^8.18.0"
   },
-  "engines":{
-    "node":"16.x"
+  "engines": {
+    "node": "20.x"
   }
 }
