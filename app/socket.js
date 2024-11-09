@@ -13,13 +13,12 @@ function setupWebSocket(server) {
         'PcIdentify': handlePcIdentify,
         'StartRecord': handleStartRecord,
         'StopRecord': handleStopRecord,
-        // Adicione outros eventos aqui conforme necessário
+        'RecordingStatusUpdate': handleRecordingStatusUpdate,
     };
 
     wss.on('connection', (ws) => {
         ws.id = uuidv4();
         ws.isComputer = false;
-        console.log('Nova conexão WebSocket: ' + ws.id);
 
         ws.on('message', (data) => {
             handleIncomingMessage(ws, data);
@@ -76,38 +75,49 @@ function setupWebSocket(server) {
     }
 
     /**
-     * Inicia a gravação nos dispositivos móveis selecionados.
+     * Envia o comando de iniciar gravação para os dispositivos móveis selecionados.
      */
     function handleStartRecord(ws, deviceIds) {
-        updateDeviceRecordingStatus(deviceIds, true, 'MobileStartRecord');
+        sendRecordCommandToDevices(deviceIds, 'MobileStartRecord');
     }
 
     /**
-     * Para a gravação nos dispositivos móveis selecionados.
+     * Envia o comando de parar gravação para os dispositivos móveis selecionados.
      */
     function handleStopRecord(ws, deviceIds) {
-        updateDeviceRecordingStatus(deviceIds, false, 'MobileStopRecord');
+        sendRecordCommandToDevices(deviceIds, 'MobileStopRecord');
     }
 
     /**
-     * Atualiza o status de gravação dos dispositivos e envia eventos correspondentes.
-     * Pré-serializa a mensagem para minimizar o atraso dentro do loop.
+     * Envia comandos de gravação para dispositivos sem atualizar o status de gravação.
      */
-    function updateDeviceRecordingStatus(deviceIds, isRecording, mobileEvent) {
+    function sendRecordCommandToDevices(deviceIds, mobileEvent) {
         // Recupera dispositivos válidos de forma eficiente usando o Map
         const devicesToUpdate = deviceIds.map((id) => mobileDevices.get(id)).filter(Boolean);
 
         // Pré-serializa a mensagem fora do loop
         const message = JSON.stringify({ event: mobileEvent });
 
-        // Atualiza o status e envia mensagens para os dispositivos quase simultaneamente
+        // Envia mensagens para os dispositivos quase simultaneamente
         devicesToUpdate.forEach((device) => {
-            device.recording = isRecording;
             device.ws.send(message);
         });
+    }
 
-        // Notifica os computadores conectados sobre a atualização
-        broadcastToComputers('ConnectedDevices', getMobileDevicesData());
+    /**
+     * Manipula atualizações de status de gravação dos dispositivos móveis.
+     */
+    function handleRecordingStatusUpdate(ws, data) {
+        // 'data' deve incluir o novo status de gravação
+        const { recording } = data;
+
+        const device = mobileDevices.get(ws.id);
+        if (device) {
+            device.recording = recording;
+            broadcastToComputers('ConnectedDevices', getMobileDevicesData());
+        } else {
+            console.warn(`Dispositivo com id ${ws.id} não encontrado no Map mobileDevices`);
+        }
     }
 
     /**
