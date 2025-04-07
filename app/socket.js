@@ -14,6 +14,7 @@ function setupWebSocket(server) {
         'StartRecord': handleStartRecord,
         'StopRecord': handleStopRecord,
         'RecordingStatusUpdate': handleRecordingStatusUpdate,
+        'Ping': handlePing,
     };
 
     wss.on('connection', (ws) => {
@@ -118,6 +119,13 @@ function setupWebSocket(server) {
         } else {
             console.warn(`Dispositivo com id ${ws.id} não encontrado no Map mobileDevices`);
         }
+    }
+
+    /**
+     * Ao receber uma mensagem 'Ping', responde com 'Pong' e um timestamp.
+     */
+    function handlePing(ws) {
+        sendMessage(ws, 'Pong', Date.now());
     }
 
     /**
